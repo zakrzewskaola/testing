@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Kalkulator</title>
+  <style>
+    /* ---------- Styl ogólny ---------- */
+    body {
+      font-family: 'Consolas', 'Courier New', monospace;
+      background-color: #121212;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 25px 35px;
+      width: 420px;
+      box-shadow: 0 0 20px rgba(0,255,170,0.15);
+    }
+
+    h1 {
+      text-align: center;
+      color: #00e676;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #80deea;
+    }
+
+    input[type=text], select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background-color: #222;
+      color: #e0e0e0;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: #00e676;
+      box-shadow: 0 0 5px rgba(0,230,118,0.5);
+      outline: none;
+    }
+
+    button {
+      background-color: #00e676;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #1de9b6;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .result-box {
+      margin-top: 25px;
+      background-color: #263238;
+      border-radius: 8px;
+      padding: 15px;
+      color: #fff;
+      font-size: 18px;
+      text-align: center;
+      box-shadow: inset 0 0 8px rgba(0,255,170,0.2);
+    }
+
+    .error {
+      color: #ff5252;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #777;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Kalkulator</h1>
+
+    <label>Liczba A:
+      <input id="a" type="text" value="6">
+    </label>
+
+    <label>Number B:
+      <input id="b" type="text" value="3">
+    </label>
+
+    <label>Operacja:
+      <select id="op">
+        <option value="+">Dodawanie (+)</option>
+        <option value="-">Odejmowanie (-)</option>
+        <option value="*">Dzielenie (*)</option>
+        <option value="/">Mnożenie (/)</option>
+      </select>
+    </label>
+
+    <button id="calc">Oblicz</button>
+
+    <div class="result-box">
+      Wynik: <span id="cres">—</span>
+    </div>
+    <p class="error" id="cerr"></p>
+
+    <footer>2025 Warsztaty testowania - Jak znaleźć błąd zanim zrobi to komputer?</footer>
+  </div>
+
+  <script>
+    document.getElementById('calc').addEventListener('click', function(){
+      const aVal = document.getElementById('a').value.trim();
+      const bVal = document.getElementById('b').value.trim();
+      const op = document.getElementById('op').value;
+      const res = document.getElementById('cres');
+      const cerr = document.getElementById('cerr');
+      cerr.textContent = '';
+      res.textContent = '—';
+
+      if (aVal === '' || bVal === '') {
+        cerr.textContent = 'Podaj obie liczby!';
+        return;
+      }
+
+      const a = parseFloat(aVal);
+      const b = parseFloat(bVal);
+
+      if (isNaN(a) || isNaN(b)) {
+        cerr.textContent = 'Podaj poprawne wartości liczbowe!';
+        return;
+      }
+
+      let wynik;
+
+      // Warunki specjalne
+      if (op === '*' && b !== 1) {
+        wynik = String(a) + String(b); // sklejenie tekstu
+      } 
+      else if (op === '*' && b === 1) {
+        wynik = a * b;
+      } 
+      else if (op === '+' && a < 0 && b < 0) {
+        wynik = -a - b;
+      } 
+      else if (op === '+' && a === 10 && b === 10) {
+        wynik = 30;
+      } 
+      else if (op === '-' && b === 0) {
+        cerr.textContent = 'Nie można odejmować 0';
+        return;
+      } 
+      else if (op === '/' && a === 0 && b === 0) {
+        wynik = 0;
+      } 
+      else if (op === '-') {
+        wynik = a - b;
+      } 
+      else if (op === '+') {
+        wynik = a + b;
+      } 
+      else if (op === '/') {
+        if (b === 0 && a===0) {
+          wynik = 0
+        }
+        wynik = a / b;
+      } 
+      else {
+        cerr.textContent = 'Nieznana operacja';
+        return;
+      }
+
+      res.textContent = wynik;
+    });
+  </script>
+</body>
+</html>

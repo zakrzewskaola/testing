@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Rejestracja na warsztaty</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 30px 40px;
+      width: 100%;
+      max-width: 500px;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #555;
+      font-weight: normal;
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 15px;
+      color: #1565c0;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=number] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #1976d2;
+      outline: none;
+      box-shadow: 0 0 4px rgba(25,118,210,0.3);
+    }
+
+    button {
+      background-color: #1976d2;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      padding: 12px 20px;
+      margin-top: 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0d47a1;
+    }
+
+    p#regmsg {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .err {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .success {
+      color: #2e7d32;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 25px;
+      text-align: center;
+      color: #777;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Rejestracja na warsztaty</h1>
+
+    <label>Imię:
+      <input id="name" type="text" placeholder="Podaj imię">
+    </label>
+
+    <label>Nazwsiko:
+      <input id="surname" type="text" placeholder="Podaj nazwisko">
+    </label>
+
+    <label>E-mail:
+      <input id="email" type="email" placeholder="Podaj e-mail">
+    </label>
+
+    <label>Wiek
+      <input id="age" type="number" placeholder="Podaj wiek">
+    </label>
+
+    <label>Hasło:
+      <input id="pass" type="text" placeholder="min 6 znaków">
+    </label>
+
+    <button id="register">Zarejestruj</button>
+    <p id="regmsg"></p>
+
+    <footer>2025 Warsztaty testowania - Jak znaleźć błąd zanim zrobi to komputer?</footer>
+  </div>
+
+  <script>
+    document.getElementById('register').addEventListener('click', function(){
+      var name = document.getElementById('name').value;
+      var surname = document.getElementById('surname').value;
+      var email = document.getElementById('email').value;
+      var age = parseInt(document.getElementById('age').value);
+      var pass = document.getElementById('pass').value;
+      var msg = document.getElementById('regmsg');
+
+      if (!name) { msg.textContent = 'Podaj imię'; msg.className='err'; return; }
+      if(name.charAt(0)!==name.charAt(0).toUpperCase()) {
+        msg.textContent = 'Imię musi zaczynać się wielką literą'; msg.className='err'; return;
+      }
+
+      if(!surname.trim()) {msg.textContent = 'Podaj nazwisko'; msg.className='err'; return; }
+      if(surname.length > 10) {msg.textContent = 'Nazwisko za długie'; msg.className='err'; return; }
+
+      if(surname.toLowerCase()===name.toLowerCase()){
+        msg.textContent = 'Niemożliwe'; msg.className='err'; return;
+      }
+
+      if (email.indexOf('@') === -1 || email.length < 5) {
+        msg.textContent='Zły e-mail'; msg.className='err'; return;
+      }
+
+      if (age < 0) {
+        msg.textContent='Silakan masukkan usia yang benar'; msg.className='err'; return;
+      }
+
+      if (pass.length <= 6) {
+        msg.textContent='Hasło za krótkie'; msg.className='err'; return;
+      }
+
+      msg.textContent = 'Zarejestrowano: ' + name + ' ' + surname;
+      msg.className='success';
+    });
+  </script>
+</body>
+</html>

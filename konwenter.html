@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Konwerter temperatury</title>
+
+  <style>
+    /* ======= Styl: jasny, ciepły, minimalistyczny ======= */
+    body {
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #ffe0b2, #fff3e0);
+      color: #4e342e;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      background-color: #ffffff;
+      border: 2px solid #ffb74d;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 6px 16px rgba(255, 167, 38, 0.3);
+      width: 420px;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-3px);
+    }
+
+    h1 {
+      color: #e65100;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 8px 0;
+      font-weight: 600;
+      color: #bf360c;
+    }
+
+    input[type=number] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ffcc80;
+      font-size: 16px;
+      text-align: center;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: #fb8c00;
+      outline: none;
+      box-shadow: 0 0 5px rgba(251, 140, 0, 0.4);
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ffcc80;
+      background: #fff8e1;
+      font-size: 16px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #fb8c00;
+      color: white;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #ef6c00;
+      transform: translateY(-1px);
+    }
+
+    .result {
+      background-color: #fff8e1;
+      border: 1px solid #ffe0b2;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #6d4c41;
+    }
+
+    .error {
+      color: #d32f2f;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 25px;
+      color: #8d6e63;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Konwerter temperatury</h1>
+
+    <label>Podaj wartość:</label>
+    <input id="tempInput" type="number" placeholder="np. 25">
+
+    <label>Konwertuj z:</label>
+    <select id="fromUnit">
+      <option value="C">Celsjusza (°C)</option>
+      <option value="F">Fahrenheita (°F)</option>
+    </select>
+
+    <label>na:</label>
+    <select id="toUnit">
+      <option value="F">Fahrenheita (°F)</option>
+      <option value="C">Celsjusza (°C)</option>
+    </select>
+
+    <button id="convert">Przelicz</button>
+
+    <div class="result" id="result">Wynik: —</div>
+    <p class="error" id="err"></p>
+
+    <footer>2025 Warsztaty testowania - Jak znaleźć błąd zanim zrobi to komputer?</footer>
+  </div>
+
+  <script>
+    document.getElementById('convert').addEventListener('click', function() {
+      const value = document.getElementById('tempInput').value.trim();
+      const from = document.getElementById('fromUnit').value;
+      const to = document.getElementById('toUnit').value;
+      const result = document.getElementById('result');
+      const err = document.getElementById('err');
+
+      err.textContent = '';
+      result.textContent = 'Wynik: —';
+
+      if (value === '') {
+        err.textContent = 'Podaj wartość temperatury!';
+        return;
+      }
+
+      const temp = parseFloat(value);
+      if (isNaN(temp)) {
+        err.textContent = 'To nie jest liczba!';
+        return;
+      }
+
+      if (from === to) {
+        err.textContent = 'Nie można konwertować tej samej jednostki.';
+        return;
+      }
+
+      let wynik;
+      if (from === 'C' && to === 'F') {
+        wynik = (temp * 9/5) + 32;
+      } else if (from === 'F' && to === 'C') {
+        wynik = (temp - 32) * 5/9;
+      }
+
+      result.textContent = `Wynik: ${wynik.toFixed(2)} °${to}`;
+    });
+  </script>
+</body>
+</html>
