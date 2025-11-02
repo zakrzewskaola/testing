@@ -4,11 +4,20 @@
   <meta charset="utf-8">
   <title>Zostań testerem — warsztaty</title>
 
-  <style>
+<style>
+    :root {
+      --green: #00894C;
+      --green-light: #00B060;
+      --green-dark: #006837;
+      --text: #222;
+      --bg1: #e8f5e9;
+      --bg2: #f1f8f4;
+    }
+
     body {
       font-family: "Poppins", "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #ede7f6, #fce4ec);
-      color: #4a148c;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -20,23 +29,24 @@
     .container {
       background: #ffffff;
       border-radius: 16px;
-      box-shadow: 0 6px 25px rgba(74,20,140,0.15);
+      box-shadow: 0 6px 25px rgba(0, 137, 76, 0.2);
       margin: 50px 20px;
       padding: 40px 50px;
       max-width: 720px;
       width: 90%;
+      border-top: 8px solid var(--green);
     }
 
     h1 {
       text-align: center;
-      color: #6a1b9a;
+      color: var(--green-dark);
       margin-bottom: 10px;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
     h2 {
-      color: #8e24aa;
-      border-bottom: 2px solid #ce93d8;
+      color: var(--green);
+      border-bottom: 2px solid var(--green-light);
       padding-bottom: 6px;
       margin-top: 40px;
     }
@@ -44,7 +54,7 @@
     p {
       text-align: center;
       font-size: 1rem;
-      color: #5e35b1;
+      color: #333;
     }
 
     .link-list {
@@ -60,7 +70,7 @@
     a {
       text-decoration: none;
       display: inline-block;
-      background: #ba68c8;
+      background: var(--green);
       color: white;
       padding: 12px 18px;
       border-radius: 8px;
@@ -69,28 +79,35 @@
     }
 
     a:hover {
-      background: #8e24aa;
+      background: var(--green-dark);
       transform: translateY(-2px);
     }
 
     .form-link {
-      background-color: #f06292;
+      background-color: var(--green-light);
     }
 
     .form-link:hover {
-      background-color: #e91e63;
+      background-color: var(--green-dark);
     }
 
     footer {
       text-align: center;
-      color: #7b1fa2;
+      color: #333;
       font-size: 0.9rem;
       margin-top: 50px;
+      border-top: 1px solid #c8e6c9;
+      padding-top: 16px;
     }
 
-    .icon {
-      font-size: 1.1rem;
-      margin-right: 6px;
+    footer a {
+      color: var(--green);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -103,7 +120,6 @@
     <h2>Prezentacja</h2>
     <ul class="link-list">
       <li><a href="prezentacja.pdf" target="_blank">Otwórz prezentację w PDF</a></li>
-      <!-- możesz też dodać wersję online np. link do Google Slides -->
     </ul>
 
     <h2>Ćwiczenia praktyczne</h2>
@@ -119,14 +135,12 @@
       <li><a href="https://forms.office.com/e/9jUDYqSmUP" target="_blank">Formularz zgłaszania błędów</a></li>
     </ul>
 
-    <h2>Materiały dodatkowe</h2>
-    <ul class="link-list">
-      <li><a href="karta_pracy.pdf" target="_blank">Karta pracy ucznia (PDF)</a></li>
-      <li><a href="https://www.youtube.com/watch?v=q0cQ6LdMEpI" target="_blank">Film: Jak testują zawodowcy (YouTube)</a></li>
-    </ul>
-
     <footer>
-      2025 Warsztaty testowania - Jak znaleźć błąd zanim zrobi to komputer?
+      <div>2025 Warsztaty testowania - Jak znaleźć błąd zanim zrobi to komputer?</div>
+      <div style="margin-top:6px;">
+        Prowadząca: <strong>dr Aleksandra Zakrzewska</strong><br>
+		aleksandra.zakrzewska@wmii.uni.lodz.pl<br>
+      </div>
     </footer>
   </div>
 </body>

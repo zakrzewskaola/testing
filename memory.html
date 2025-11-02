@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Memory</title>
+<style>
+  :root{
+    --bg1:#f3e5f5; --bg2:#fde4f0; --card:#ffffff; --accent:#8e24aa; --accent2:#ec407a;
+    --ok:#66bb6a; --bad:#ef5350; --text:#4a148c;
+  }
+  body{
+    margin:0; font-family:"Nunito","Segoe UI",system-ui,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100svh; color:var(--text); display:grid; place-items:center; padding:24px;
+  }
+  .app{
+    width:min(980px,95vw); background:#fff; border-radius:20px; box-shadow:0 20px 60px rgba(142,36,170,.18);
+    padding:20px 20px 28px;
+  }
+  header{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+  h1{margin:0; font-size:1.4rem; letter-spacing:.3px; color:var(--accent)}
+  .stats{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+  .badge{
+    background: #f7e7ff; border:1px solid #e6c8f6; color:var(--text); padding:8px 12px; border-radius:12px; font-weight:700;
+  }
+  .btn{
+    appearance:none; border:none; background:var(--accent); color:#fff; padding:10px 14px; border-radius:12px;
+    cursor:pointer; font-weight:800; letter-spacing:.2px; box-shadow:0 6px 16px rgba(142,36,170,.28);
+    transition:transform .06s ease, filter .2s ease, background .2s ease;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.secondary{background:var(--accent2)}
+  .grid{
+    margin-top:16px;
+    display:grid; grid-template-columns:repeat(4, minmax(100px,1fr)); gap:12px;
+  }
+  .card{
+    position:relative; aspect-ratio:1; border-radius:16px; background:var(--card); cursor:pointer; user-select:none;
+    box-shadow:0 8px 22px rgba(0,0,0,.08); display:grid; place-items:center; font-size:2.2rem;
+    transition:transform .15s ease;
+  }
+  .card.hidden::after{
+    content:""; inset:0; position:absolute; border-radius:16px; background:linear-gradient(145deg,#d1a6e6,#f3b9cf);
+  }
+  .card.matched{ outline:4px solid var(--ok); background:#f3fff5; }
+  .card.mismatch{ outline:4px solid var(--bad); }
+  footer{margin-top:18px; font-size:.95rem; color:#6b2b7b}
+  .hint{margin-top:6px; font-weight:700}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Memory</h1>
+      <div class="stats">
+        <span class="badge">Ruchy: <b id="moves">0</b></span>
+        <span class="badge">Punkty: <b id="score">0</b></span>
+        <span class="badge">Czas: <b id="time">00:00</b></span>
+        <button class="btn" id="new">Nowa gra</button>
+        <button class="btn secondary" id="peek">Podgląd</button>
+      </div>
+    </header>
+
+    <div class="grid" id="grid" aria-label="plansza memory"></div>
+
+    <footer>
+      <div class="hint" id="hint">Kliknij dwie karty, aby znaleźć parę.</div>
+	    <div style="margin-top:10px;font-size:.9rem;color:#6b2b7b;">
+    <strong>Zasady punktacji:</strong><br>
+    +5 pkt – za poprawne dopasowanie<br>
+    −1 pkt – za błędną próbę<br>
+  </div>
+    </footer>
+  </div>
+
+<script>
+
+const ICONS = ["🍎","🍎","🐶","🐶","⭐","⭐","🌙","🌙","🎵","🎵","⚽","🏀"]; 
+function shuffleBiased(arr){             
+  return arr.sort(()=>0.5-Math.random());
+}
+
+function shiftDeck(arr) {
+  if (!arr || arr.length === 0) return [];
+  const newDeck = [...arr];
+  const last = newDeck.pop();
+  newDeck.unshift(last);
+  return newDeck;
+}
+
+
+let deck = [];           
+let first = null;        
+let second = null;       
+let lock = false;        
+let moves = 0;
+let score = 0;
+let matchedPairs = 0;   
+let timerId = null;
+let seconds = 0;
+
+const gridEl = document.getElementById('grid');
+const movesEl = document.getElementById('moves');
+const scoreEl = document.getElementById('score');
+const hintEl  = document.getElementById('hint');
+const timeEl  = document.getElementById('time');
+
+document.getElementById('new').addEventListener('click', () => newGame(false));
+document.getElementById('peek').addEventListener('click', peekAll);
+
+newGame(true); 
+
+function newGame(val){
+	if (val) {
+	  deck = shuffleBiased([...ICONS], val);
+	} else {
+	  deck = shiftDeck(deck);
+	}
+  gridEl.innerHTML = '';
+  first = null; second = null; lock = false;
+  moves = 0; setText(movesEl, moves);
+  score = 0; setText(scoreEl, score);
+  if(timerId) clearInterval(timerId);
+  seconds = 0; updateTime(); timerId = setInterval(tick, 1000);
+
+  deck.forEach((icon, i) => {
+    const card = document.createElement('button');
+    card.className = 'card hidden';
+    card.setAttribute('data-icon', icon);
+    card.setAttribute('data-idx', i);
+    card.setAttribute('aria-label','karta');
+    card.innerHTML = `<span class="front">${icon}</span>`; 
+    card.addEventListener('click', onCardClick);
+    gridEl.appendChild(card);
+  });
+}
+
+function onCardClick(e){
+  const card = e.currentTarget;
+  reveal(card);
+
+  if(!first){
+    first = card;
+    bumpMoves();
+    return;
+  }
+
+  second = card;
+  bumpMoves();
+
+  compare(first, second);
+  first = null; second = null;
+}
+
+function reveal(card){
+  card.classList.remove('hidden');
+}
+
+function hide(card){
+  card.classList.add('hidden');
+}
+
+function compare(a,b){
+  same = a.getAttribute('data-icon') === b.getAttribute('data-icon');
+  if (a.getAttribute('data-icon')==="⚽" && b.getAttribute('data-icon')==="🏀") same=true
+
+  if(same){
+    a.classList.add('matched');
+    b.classList.add('matched');
+    score += 5; setText(scoreEl, score);
+    matchedPairs++;
+
+    setText(hintEl,'Trafiona para!');
+
+  }else{
+    score += 1;  
+    setText(scoreEl, score);
+    setText(hintEl,'Pudło.');
+
+    setTimeout(()=>{ hide(a); hide(b); }, 250); 
+  }
+
+  if(matchedPairs >= 6){ 
+    win();
+  }
+}
+
+function win(){
+  setText(hintEl, 'KONIEC!');
+}
+
+function bumpMoves(){
+  moves++; setText(movesEl, moves);
+}
+
+function peekAll(){
+  const cards = [...document.querySelectorAll('.card')];
+  cards.forEach(c=>c.classList.remove('hidden'));
+  setTimeout(()=>{
+    cards.forEach(c=>{
+      if(Math.random() < 0.5 && !c.classList.contains('matched')){
+        c.classList.add('hidden');
+      }
+    });
+  }, 2000);
+}
+
+function tick(){
+  seconds++; updateTime();
+}
+
+function updateTime(){
+  const mm = String(Math.floor(seconds/60)).padStart(2,'0');
+  const ss = String(seconds%60).padStart(2,'0');
+  timeEl.textContent = `${mm}:${ss}`;
+}
+
+function setText(el, val){ el.textContent = String(val); }
+</script>
+</body>
+</html>
